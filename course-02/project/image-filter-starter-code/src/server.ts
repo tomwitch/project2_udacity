@@ -1,6 +1,6 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import express from 'express'
+import bodyParser from 'body-parser'
+import {filterImageFromURL, deleteLocalFiles} from './util/util'
 
 (async () => {
 
@@ -26,6 +26,19 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //    image_url: URL of a publicly accessible image
   // RETURNS
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
+  app.get('filteredimage', async (req, res) => {
+    let imageUrl = req.query.image_url
+    if (imageUrl) {
+      filterImageFromURL(imageUrl).then((response) => {
+        res.sendFile(response)
+        res.on('finish', function () {
+          deleteLocalFiles([response])
+        })
+      })
+    } else {
+      res.status(404).send('URL is incorect, please choose the real image!')
+    }
+  })
 
   /**************************************************************************** */
 
